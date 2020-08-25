@@ -12,7 +12,7 @@
 ## HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 ## --------------------------------------------------------------------------
 ##
-## Copyright ((c)) 2002-2019, Rice University
+## Copyright ((c)) 2002-2020, Rice University
 ## All rights reserved.
 ##
 ## Redistribution and use in source and binary forms, with or without
@@ -161,8 +161,14 @@ XED2_HPCLINK_LIBS = @XED2_HPCLINK_LIBS@
 CUPTI_INC_FLGS = @OPT_CUPTI_IFLAGS@
 CUPTI_LD_FLGS = @OPT_CUPTI_LDFLAGS@
 CUPTI_BASE = @OPT_CUPTI@
-CUDA_SANITIZER_INC_FLGS = @OPT_CUDA_SANITIZER_IFLAGS@
-CUDA_SANITIZER_BASE = @OPT_CUDA_SANITIZER@
+SANITIZER_INC_FLGS = @OPT_SANITIZER_IFLAGS@
+SANITIZER_BASE = @OPT_SANITIZER@
+GPU_PATCH_INC_FLGS = @OPT_GPU_PATCH_IFLAGS@
+GPU_PATCH_LD_FLGS = @OPT_GPU_PATCH_LDFLAGS@
+GPU_PATCH_BASE = @OPT_GPU_PATCH@
+REDSHOW_INC_FLGS = @OPT_REDSHOW_IFLAGS@
+REDSHOW_LD_FLGS = @OPT_REDSHOW_LDFLAGS@
+REDSHOW_BASE = @OPT_REDSHOW@
 
 MPI_INC = @MPI_INC@
 MPI_PROTO_FILE = @MPI_PROTO_FILE@
@@ -195,6 +201,7 @@ UNW_COMMON_FILES = \
 	unwind/common/interval_t.c			\
 	unwind/common/libunw_intervals.c		\
 	unwind/common/stack_troll.c			\
+	unwind/common/uw_hash.c			\
 	unwind/common/uw_recipe_map.c
 
 UNW_X86_FILES = \
@@ -265,7 +272,9 @@ UNW_MIPS_LD_FLAGS =
 
 MY_CPP_DEFINES =			\
 	-D_GNU_SOURCE			\
-	-DINLINE_FN=1
+	-DINLINE_FN=1 \
+	-DLOCAL_BUILD=1 \
+	-D__HIP_PLATFORM_HCC__=1
 
 MY_BASE_FILES =				\
 	utilities/first_func.c		\
@@ -314,10 +323,11 @@ MY_BASE_FILES =				\
 	thread_data.c			\
 	thread_use.c			\
 	thread_finalize.c		\
+	control-knob.c   \
+	control-knob.h   \
 	hpcrun_flag_stacks.c \
 	device-finalizers.c \
 	device-initializers.c \
-	addr_to_module.c \
 	module-ignore-map.c \
 	threadmgr.c			\
 	trace.c				\
@@ -330,8 +340,8 @@ MY_BASE_FILES =				\
 	cct/cct-node-vector.c     \
 	\
 	cct2metrics.c                   \
-	\
-	trampoline/common/trampoline.c  \
+##	\
+##	trampoline/common/trampoline.c  \
 	\
 	lush/lush-backtrace.h lush/lush-backtrace.c \
 	lush/lush.h lush/lush.c	\
@@ -350,6 +360,32 @@ MY_BASE_FILES =				\
 	messages/messages-sync.c	\
 	messages/messages-async.c	\
 	messages/fmt.c	                \
+	hpcrun-placeholders.c 		\
+	gpu/gpu-activity.c 		\
+	gpu/gpu-activity-channel.c 	\
+	gpu/gpu-activity-process.c 	\
+	gpu/gpu-application-thread-api.c \
+	gpu/gpu-channel-item-allocator.c \
+	gpu/gpu-context-id-map.c	\
+	gpu/gpu-correlation.c 		\
+	gpu/gpu-correlation-channel.c 	\
+	gpu/gpu-correlation-channel-set.c \
+	gpu/gpu-correlation-id.c	\
+	gpu/gpu-correlation-id-map.c 	\
+	gpu/gpu-device-id-map.c	\
+	gpu/gpu-event-id-map.c \
+	gpu/gpu-function-id-map.c \
+	gpu/gpu-host-correlation-map.c 	\
+	gpu/gpu-metrics.c 		\
+	gpu/gpu-monitoring.c 		\
+	gpu/gpu-monitoring-thread-api.c \
+	gpu/gpu-op-placeholders.c 	\
+	gpu/gpu-splay-allocator.c	\
+	gpu/gpu-stream-id-map.c		\
+	gpu/gpu-trace.c			\
+	gpu/gpu-trace-channel.c		\
+	gpu/gpu-trace-item.c		\
+	\
 	ompt/ompt-callstack.c           \
 	ompt/ompt-defer.c               \
 	ompt/ompt-device.c              \
@@ -369,6 +405,16 @@ MY_BASE_FILES =				\
 	utilities/timer.c		\
 	utilities/tokenize.h utilities/tokenize.c \
 	utilities/unlink.h utilities/unlink.c
+
+# 	gpu/gpu-api.c
+
+if HOST_CPU_PPC
+MY_BASE_FILES +=			\
+        trampoline/common/trampoline_eager.c
+else
+MY_BASE_FILES +=			\
+        trampoline/common/trampoline_lazy.c
+endif
 
 if OPT_ENABLE_PERF_EVENT
 MY_BASE_FILES +=  \
@@ -448,33 +494,35 @@ if OPT_PAPI_CUPTI
 endif
 
 if OPT_ENABLE_CUDA
-MY_CUDA_FILES = sample-sources/nvidia/cuda-api.c 		\
-	sample-sources/nvidia/cuda-device-map.c			\
-	sample-sources/nvidia/cuda-state-placeholders.c  \
-	sample-sources/nvidia/nvidia.c			\
-	sample-sources/nvidia/cubin-id-map.c			\
-	sample-sources/nvidia/cubin-hash-map.c			\
-	sample-sources/nvidia/cubin-module-map.c			\
-	sample-sources/nvidia/cubin-symbols.c			\
-	sample-sources/nvidia/cstack.c
+MY_CUDA_FILES = sample-sources/nvidia.c \
+							  gpu/nvidia/cuda-api.c \
+								gpu/nvidia/cubin-hash-map.c \
+								gpu/nvidia/cubin-id-map.c	\
+								gpu/nvidia/cubin-symbols.c \
+								gpu/nvidia/cuda-device-map.c
+endif
+
+if OPT_ENABLE_SANITIZER
+MY_SANITIZER_FILES = gpu/nvidia/sanitizer-api.c \
+										 gpu/nvidia/sanitizer-buffer.c \
+										 gpu/nvidia/sanitizer-buffer-channel.c \
+										 gpu/nvidia/sanitizer-buffer-channel-set.c \
+										 gpu/nvidia/sanitizer-context-map.c \
+										 gpu/nvidia/sanitizer-stream-map.c \
+										 gpu/nvidia/sanitizer-kernel-map.c
 endif
 
 if OPT_ENABLE_CUPTI
-MY_CUPTI_FILES = sample-sources/nvidia/cupti-analysis.c			\
-	               sample-sources/nvidia/cupti-api.c			\
-	               sample-sources/nvidia/cupti-correlation-id-map.c	\
-	               sample-sources/nvidia/cupti-function-id-map.c		\
-	               sample-sources/nvidia/cupti-host-op-map.c		\
-	               sample-sources/nvidia/cupti-node.c			\
-	               sample-sources/nvidia/cupti-record.c
+MY_CUPTI_FILES = gpu/nvidia/cupti-activity-translate.c	\
+								 gpu/nvidia/cupti-analysis.c \
+								 gpu/nvidia/cupti-api.c \
+								 gpu/nvidia/cupti-gpu-api.c		
 endif
 
-if OPT_ENABLE_CUDA_SANITIZER
-MY_CUDA_SANITIZER_FILES = sample-sources/nvidia/sanitizer-api.c \
-													sample-sources/nvidia/sanitizer-context-map.c \
-													sample-sources/nvidia/sanitizer-stream-map.c \
-													sample-sources/nvidia/sanitizer-node.c \
-                          sample-sources/nvidia/sanitizer-record.c
+if OPT_ENABLE_ROCM
+MY_ROCM_FILES= sample-sources/amd.c \
+							 gpu/amd/roctracer-activity-translate.c \
+							 gpu/amd/roctracer-api.c 	
 endif
 
 MY_UPC_FILES = sample-sources/upc.c
@@ -502,7 +550,9 @@ MY_INCLUDE_DIRS =			\
 	-I$(HPCFNBOUNDS_INC)		\
         $(OPT_CUDA_IFLAGS)             \
         $(OPT_CUPTI_IFLAGS)            \
-        $(OPT_CUDA_SANITIZER_IFLAGS)   \
+        $(OPT_SANITIZER_IFLAGS)   \
+        $(OPT_GPU_PATCH_IFLAGS)        \
+				$(OPT_REDSHOW_IFLAGS)   \
 	-I$(LIBELF_INC)			\
 	-I$(LIBMONITOR_INC)
 
@@ -690,9 +740,9 @@ if OPT_BGQ_BACKEND
 endif
 
 libhpcrun_la_LDFLAGS = -Wl,-Bsymbolic 	\
-	-L$(LIBMONITOR_LIB) -lmonitor -lpthread -lrt -L$(LIBELF_LIB) -lelf \
+	-L$(LIBMONITOR_LIB) -lmonitor -lpthread -lrt -lelf -L$(LIBELF_LIB)  \
         $(LIBUNWIND_LDFLAGS_DYN) $(LZMA_LDFLAGS_DYN) \
-        $(PERFMON_LDFLAGS_DYN) $(MBEDTLS_LIBS)
+        $(PERFMON_LDFLAGS_DYN) $(MBEDTLS_LIBS) $(OPT_ROCM_LDFLAGS)
 
 libhpcrun_ga_la_LDFLAGS = -Wl,-Bsymbolic
 
@@ -833,12 +883,20 @@ if OPT_ENABLE_CUPTI
   MY_CPP_DEFINES  += -DHPCRUN_SS_NVIDIA
 endif
 
-if OPT_ENABLE_CUDA_SANITIZER
-  libhpcrun_la_SOURCES  += $(MY_CUDA_SANITIZER_FILES)
-  libhpcrun_o_SOURCES   += $(MY_CUDA_SANITIZER_FILES)
-  libhpcrun_la_CPPFLAGS += $(CUDA_SANITIZER_INC_FLGS)
+if OPT_ENABLE_SANITIZER
+  libhpcrun_la_SOURCES  += $(MY_SANITIZER_FILES)
+  libhpcrun_o_SOURCES   += $(MY_SANITIZER_FILES)
+  libhpcrun_la_CPPFLAGS += $(SANITIZER_INC_FLGS)
 
   MY_CPP_DEFINES  += -DHPCRUN_SS_NVIDIA
+endif
+
+if OPT_ENABLE_GPU_PATCH
+  libhpcrun_la_CPPFLAGS += $(GPU_PATCH_INC_FLGS)
+  libhpcrun_la_CPPFLAGS += $(REDSHOW_INC_FLGS)
+  libhpcrun_la_LDFLAGS  += $(REDSHOW_LD_FLGS)
+
+  MY_CPP_DEFINES  += -DHPCTOOLKIT_GPU_PATCH='"$(GPU_PATCH_LD_FLGS)"'
 endif
 
 
@@ -890,7 +948,17 @@ endif
 if OPT_ENABLE_CUDA
   libhpcrun_la_SOURCES += $(MY_CUDA_FILES)
   libhpcrun_la_CPPFLAGS += -DENABLE_CUDA
-  libhpcrun_la_CFLAGS  += $(OPT_CUDA_IFLAGS) -g
+  libhpcrun_la_CFLAGS += $(OPT_CUDA_IFLAGS)
+  libhpcrun_o_SOURCES += $(MY_CUDA_FILES)
+endif
+
+
+if OPT_ENABLE_ROCM
+  libhpcrun_la_SOURCES  += $(MY_ROCM_FILES)
+  libhpcrun_la_CPPFLAGS += -DENABLE_ROCM
+  libhpcrun_la_CFLAGS   += $(OPT_ROCM_IFLAGS) -g
+
+  MY_CPP_DEFINES  += -DHPCRUN_SS_AMD
 endif
 
 if UNW_LIBUNW

@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2019, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -153,10 +153,9 @@ Options: Output:\n\
   -o <db-path>, --db <db-path>, --output <db-path>\n\
                        Specify Experiment database name <db-path>.\n\
                        {./" Analysis_DB_DIR "}\n\
-                       Experiment format {" Analysis_OUT_DB_EXPERIMENT "}\n\
   --metric-db <yes|no>\n\
                        Control whether to generate a thread-level metric\n\
-                       value database for hpcviewer scatter plots. {yes}\n\
+                       value database for hpcviewer scatter plots. {no}\n\
   --remove-redundancy \n\
                        Eliminate procedure name redundancy in experiment.xml\n\
   --struct-id          Add 'str=nnn' field to profile data with the hpcstruct\n\
@@ -287,6 +286,29 @@ static inline bool is_directory(const std::string &path) {
 }
 
 
+static inline void find_files(std::vector<std::string> &files,
+  const std::string &prefix, const std::string &suffix) {
+  DIR *dir;
+  struct dirent *ent;
+
+  if ((dir = opendir(prefix.c_str())) != NULL) {
+    /* append files within the directory */
+    while ((ent = readdir(dir)) != NULL) {
+      auto file_name = std::string(ent->d_name);
+      std::size_t found = file_name.find(suffix);
+      if (found != std::string::npos) {
+        auto path_name = prefix + "/" + file_name;
+        if (!is_directory(path_name)) {
+          files.push_back(path_name);
+        }
+      }
+    }
+  }
+
+  closedir(dir);
+}
+
+
 void
 ArgsHPCProf::parse(int argc, const char* const argv[])
 {
@@ -312,14 +334,14 @@ ArgsHPCProf::parse(int argc, const char* const argv[])
     }
     if (parser.isOpt("help")) { 
       printUsage(std::cerr); 
-      exit(1);
+      exit(0);
     }
     if (parser.isOpt("remove-redundancy")) { 
       remove_redundancy = true;
     }
     if (parser.isOpt("version")) { 
       printVersion(std::cerr);
-      exit(1);
+      exit(0);
     }
     if (parser.isOpt("verbose")) {
       int verb = 1;
@@ -432,26 +454,15 @@ ArgsHPCProf::parse(int argc, const char* const argv[])
     profileFiles.resize(numArgs);
     for (uint i = 0; i < numArgs; ++i) {
       profileFiles[i] = parser.getArg(i);
-      std::string structs_dir = profileFiles[i] + "/structs";
+      const std::string structs_dir = profileFiles[i] + "/structs";
       // parse structs directory
       if (is_directory(structs_dir)) {
-        DIR *dir;
-        struct dirent *ent;
-        if ((dir = opendir(structs_dir.c_str())) != NULL) {
-          auto struct_suffix = std::string("hpcstruct");
-          /* append files within the directory */
-          while ((ent = readdir(dir)) != NULL) {
-            auto file_name = std::string(ent->d_name);
-            std::size_t found = file_name.find(struct_suffix);
-            if (found != std::string::npos) {
-              auto path_name = structs_dir + "/" + file_name;
-              if (!is_directory(path_name)) {
-                structureFiles.push_back(path_name);
-              }
-            }
-          }
-          closedir(dir);
-        }
+        find_files(structureFiles, structs_dir, ".hpcstruct");
+      }
+
+      const std::string nvidia_dir = structs_dir + "/nvidia";
+      if (is_directory(nvidia_dir)) {
+        find_files(instructionFiles, nvidia_dir, ".inst");
       }
     }
 

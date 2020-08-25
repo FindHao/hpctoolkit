@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2019, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -94,6 +94,7 @@ sample_source_t obj_name() = {
   .shutdown = shutdown,
   .supports_event = supports_event,
   .process_event_list = process_event_list,
+  .finalize_event_list = finalize_event_list,
   .gen_event_set = gen_event_set,
   .display_events = display_events,
 

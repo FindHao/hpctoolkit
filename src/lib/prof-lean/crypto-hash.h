@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2019, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -58,6 +58,10 @@
 
 #ifndef _HPCTOOLKIT_CRYPTO_HASH_H_
 #define _HPCTOOLKIT_CRYPTO_HASH_H_
+
+#define MD5_HASH_NBYTES 16
+
+#define HASH_LENGTH MD5_HASH_NBYTES
 
 //*****************************************************************************
 // interface operations

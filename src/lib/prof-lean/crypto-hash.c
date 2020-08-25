@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2019, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -74,16 +74,13 @@
 // macros
 //*****************************************************************************
 
-#define MD5_HASH_NBYTES 16
-
-#define HASH_LENGTH MD5_HASH_NBYTES 
+ 
 
 #define LOWER_NIBBLE_MASK 	(0x0f)
 #define UPPER_NIBBLE(c) 	((c >> 4) & LOWER_NIBBLE_MASK)
 #define LOWER_NIBBLE(c) 	(c  & LOWER_NIBBLE_MASK)
 
 #define HEX_TO_ASCII(c) ((c > 9) ?  'a' + (c - 10) : ('0' + c))
-
 
 
 //*****************************************************************************

@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2012, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -154,9 +154,15 @@ METHOD_FN(supports_event,const char *ev_str)
 static void
 METHOD_FN(process_event_list, int lush_metrics)
 {
+#if 0
   BLAME_REQUEST();
+#endif
 }
 
+static void
+METHOD_FN(finalize_event_list)
+{
+}
 
 static void
 METHOD_FN(gen_event_set,int lush_metrics)

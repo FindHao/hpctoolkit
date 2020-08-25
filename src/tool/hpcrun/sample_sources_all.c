@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2019, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -260,6 +260,7 @@ hpcrun_sample_sources_from_eventlist(char* evl)
 // The mapped operations
 
 _AS1(process_event_list, int, lush_metrics)
+_AS0(finalize_event_list, 0);
 _AS0(init, 0)
 _AS0(thread_init, 0)
 _AS0(thread_init_action, 0)

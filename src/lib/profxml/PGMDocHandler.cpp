@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2019, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -417,6 +417,11 @@ PGMDocHandler::startElement(const XMLCh* const GCC_ATTR_UNUSED uri,
 
     string node_id = getAttr(attributes, attrId);
     loopNode->m_origId = atoi(node_id.c_str());
+
+    string vma = getAttr(attributes, attrVMA);
+    if (!vma.empty()) {
+      loopNode->vmaSet().fromString(vma.c_str());
+    }
 
     DIAG_DevMsgIf(DBG, "PGMDocHandler: " << loopNode->toStringMe());
 

@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2019, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -114,7 +114,7 @@
 #include "device-initializers.h"
 #include "device-finalizers.h"
 #include "module-ignore-map.h"
-#include "addr_to_module.h"
+#include "control-knob.h"
 #include "epoch.h"
 #include "thread_data.h"
 #include "threadmgr.h"
@@ -127,7 +127,7 @@
 
 #include <memory/hpcrun-malloc.h>
 #include <memory/mmap.h>
-
+#include <tool/hpcrun/sample-sources/gpu/stream-tracing.h>
 #include <monitor-exts/monitor_ext.h>
 
 #include <cct/cct.h>
@@ -416,6 +416,8 @@ hpcrun_init_internal(bool is_child)
   // because mapping of load modules affects the recipe map.
   hpcrun_unw_init();
 
+  hpcrun_save_vdso();
+
   // init callbacks for each device
   hpcrun_initializer_init();
 
@@ -495,6 +497,7 @@ hpcrun_init_internal(bool is_child)
   //
   if (! is_child) {
     SAMPLE_SOURCES(process_event_list, lush_metrics);
+    SAMPLE_SOURCES(finalize_event_list);
     hpcrun_metrics_data_finalize();
   }
   SAMPLE_SOURCES(gen_event_set, lush_metrics);
@@ -545,6 +548,9 @@ hpcrun_init_internal(bool is_child)
   }
 
   hpcrun_is_initialized_private = true;
+
+  // FIXME: this isn't in master-gpu-trace. how is it managed?
+  // stream_tracing_init();
 }
 
 #define GET_NEW_AUX_CLEANUP_NODE(node_ptr) do {                               \
@@ -663,6 +669,9 @@ hpcrun_fini_internal()
     int is_process = 1;
     thread_finalize(is_process);
 
+// FIXME: this isn't in master-gpu-trace. how is it managed?
+    // stream_tracing_fini();
+
     // write all threads' profile data and close trace file
     hpcrun_threadMgr_data_fini(hpcrun_get_thread_data());
 
@@ -775,8 +784,9 @@ hpcrun_thread_fini(epoch_t *epoch)
   // inform thread manager that we are terminating the thread
   // thread manager may enqueue the thread_data (in compact mode)
   // or flush the data into hpcrun file
+  int add_separator = 0;
   thread_data_t* td = hpcrun_get_thread_data();
-  hpcrun_threadMgr_data_put(epoch, td);
+  hpcrun_threadMgr_data_put(epoch, td, add_separator);
 
   TMSG(PROCESS, "End of thread");
 }
@@ -859,6 +869,8 @@ monitor_init_process(int *argc, char **argv, void* data)
 
   messages_init();
 
+  control_knob_init();  
+
   hpcrun_do_custom_init();
 
   // for debugging, limit the life of the execution with an alarm.
@@ -897,6 +909,7 @@ monitor_init_process(int *argc, char **argv, void* data)
     EEMSG("TST debug ctl is active!");
     STDERR_MSG("Std Err message appears");
   }
+
 
   hpcrun_safe_exit();
 
@@ -1647,3 +1660,23 @@ monitor_post_dlclose(void* handle, int ret)
 }
 
 #endif /* ! HPCRUN_STATIC_LINK */
+
+
+//----------------------------------------------------------------------
+
+// FIXME: Add a weak symbol for cplus_demangle() for hpclink in the
+// static case.  Something is pulling in hpctoolkit_demangle() and
+// thus cplus_demangle() into libhpcrun.o and this breaks hpclink,
+// even though nothing actually uses them.  But the real fix should be
+// in the lib Makefiles.
+
+#ifdef HPCRUN_STATIC_LINK
+
+char * __attribute__ ((weak))
+cplus_demangle(char *str, int opts)
+{
+  return strdup(str);
+}
+
+#endif
+

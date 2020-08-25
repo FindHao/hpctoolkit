@@ -12,7 +12,7 @@
 ## HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 ## --------------------------------------------------------------------------
 ##
-## Copyright ((c)) 2002-2019, Rice University
+## Copyright ((c)) 2002-2020, Rice University
 ## All rights reserved.
 ##
 ## Redistribution and use in source and binary forms, with or without
@@ -73,8 +73,7 @@ SUBDIRS += \
 	hpcprof \
 	hpcproftt \
 	hpclump \
-	hpctracedump \
-	misc
+	hpctracedump
 
 if OPT_ENABLE_HPCSERVER
 SUBDIRS += hpcserver
@@ -84,7 +83,8 @@ endif
 if OPT_ENABLE_HPCRUN
   SUBDIRS += \
 	hpcrun \
-	hpcfnbounds
+	hpcfnbounds \
+	hpcfnbounds2
 endif
 
 if OPT_ENABLE_MPI

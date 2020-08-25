@@ -12,7 +12,7 @@
 ## HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 ## --------------------------------------------------------------------------
 ##
-## Copyright ((c)) 2002-2019, Rice University
+## Copyright ((c)) 2002-2020, Rice University
 ## All rights reserved.
 ##
 ## Redistribution and use in source and binary forms, with or without
@@ -62,17 +62,6 @@ DWARF_IFLAGS = -I$(LIBDWARF_INC)
 endif
 
 MYSOURCES = \
-	cuda/CFGParser.cpp  \
-	cuda/CudaCFGFactory.cpp  \
-	cuda/CudaFunction.cpp  \
-	cuda/GraphReader.cpp \
-	cuda/CudaBlock.cpp  \
-	cuda/CudaCodeSource.cpp  \
-	cuda/ReadCubinCFG.cpp \
-	ElfHelper.cpp \
-	Fatbin.cpp \
-	InputFile.cpp \
-	RelocateCubin.cpp \
 	Struct.cpp  \
 	Struct-Inline.cpp  \
 	Struct-Output.cpp

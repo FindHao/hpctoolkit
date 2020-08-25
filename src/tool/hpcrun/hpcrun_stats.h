@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2019, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -180,6 +180,13 @@ long hpcrun_stats_trolled(void);
 
 void hpcrun_stats_frames_total_inc(long amt);
 long hpcrun_stats_frames_total(void);
+
+//------------------------------------------------------
+// number of (unwind) frames in where libunwind failed
+//------------------------------------------------------
+
+void hpcrun_stats_frames_libfail_total_inc(long amt);
+long hpcrun_stats_frames_libfail_total(void);
 
 //---------------------------------------------------------------------
 // total number of (unwind) frames in sample set that employed trolling

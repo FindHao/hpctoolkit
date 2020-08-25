@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2019, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -82,7 +82,7 @@
 #include <utilities/tokenize.h>
 #include <cct/cct.h>
 
-#if defined (HOST_CPU_x86_64)
+#if defined (HOST_CPU_x86_64) || defined (HOST_CPU_PPC)
 
 #include <messages/messages.h>
 
@@ -178,6 +178,11 @@ METHOD_FN(process_event_list, int lush_metrics)
   ENABLE(USE_TRAMP);
 }
 
+static void
+METHOD_FN(finalize_event_list)
+{
+}
+
 //
 // Event sets not truly relevant for this sample source,
 //
@@ -225,6 +230,8 @@ hpcrun_retcnt_inc(cct_node_t* node, int incr)
 {
   int metric_id = hpcrun_event2metric(&_retcnt_obj, RETCNT_EVENT);
 
+  if (metric_id == -1) return;
+  
   TMSG(TRAMP, "Increment retcnt (metric id = %d), by %d", metric_id, incr);
   cct_metric_data_increment(metric_id,
 			    node,

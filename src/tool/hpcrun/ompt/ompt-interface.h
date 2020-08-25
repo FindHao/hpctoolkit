@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2014, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -285,24 +285,6 @@ ompt_set_callback_internal
 (
   ompt_callbacks_t event,
   ompt_callback_t callback
-);
-
-
-//-----------------------------------------------------------------------------
-// NVIDIA GPU pc sampling support
-//-----------------------------------------------------------------------------
-
-void 
-ompt_pc_sampling_enable
-(
-  void 
-);
-
-
-void 
-ompt_pc_sampling_disable
-(
-  void
 );
 
 

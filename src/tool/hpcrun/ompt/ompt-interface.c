@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2013, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -575,9 +575,9 @@ init_idle_blame_shift
 
   if (!ompt_idle_blame_requested) return;
 
+#if 0
   ompt_idle_blame_shift_request();
 
-#if 0
   retval = ompt_set_callback_fn(ompt_callback_idle,
                                 (ompt_callback_t)ompt_idle);
   idle_blame_shift_avail |= ompt_event_may_occur(retval);

@@ -12,7 +12,7 @@
 ## HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 ## --------------------------------------------------------------------------
 ##
-## Copyright ((c)) 2002-2019, Rice University
+## Copyright ((c)) 2002-2020, Rice University
 ## All rights reserved.
 ##
 ## Redistribution and use in source and binary forms, with or without
@@ -61,6 +61,9 @@ DYNINST_LFLAGS = @DYNINST_LFLAGS@
 LIBDWARF_INC = @LIBDWARF_INC@
 LIBDWARF_LIB = @LIBDWARF_LIB@
 
+SYMTABAPI_LIB = @SYMTABAPI_LIB@
+SYMTABAPI_LIB_LIST = @SYMTABAPI_LIB_LIST@
+
 LIBELF_INC = @LIBELF_INC@
 LIBELF_LIB   = @LIBELF_LIB@
 
@@ -102,8 +105,10 @@ MYLDADD = \
 	$(HPCLIB_Analysis) \
 	$(HPCLIB_Banal) \
 	$(HPCLIB_Banal_Simple) \
+	$(HPCLIB_Cuda) \
 	$(HPCLIB_Prof) \
 	$(HPCLIB_Binutils) \
+	$(HPCLIB_ProfLean) \
 	$(HPCLIB_ISA) \
 	$(MY_LIB_XED) \
 	$(HPCLIB_XML) \
@@ -143,8 +148,8 @@ endif
 MYCLEAN = @HOST_LIBTREPOSITORY@
 
 GENHEADERS = \
-	$(srcdir)/cubins-analysis.h \
-	$(srcdir)/usage.h
+	cubins-analysis.h \
+	usage.h
 
 #----------------------------------------------------------------------
 
@@ -172,7 +177,7 @@ MOSTLYCLEANFILES = $(MYCLEAN)
 # Other rules
 #############################################################################
 
-$(srcdir)/%.h : $(srcdir)/%.txt
+%.h : $(srcdir)/%.txt
 	$(srcdir)/stringify.py < $<  > $@
 
 

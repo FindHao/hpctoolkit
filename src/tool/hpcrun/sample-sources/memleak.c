@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2019, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -170,10 +170,14 @@ METHOD_FN(process_event_list,int lush_metrics)
   char *buffer = hpcrun_malloc(sizeof(char) * MAX_CHAR_FORMULA);
 
   // leak = allocated - freed
-  sprintf(buffer, "$%d-$%d", alloc_metric_id, free_metric_id);
+  sprintf(buffer, "#%d-#%d", alloc_metric_id, free_metric_id);
   memleak_metric->formula = buffer;
 }
 
+static void
+METHOD_FN(finalize_event_list)
+{
+}
 
 //
 // Event sets not relevant for this sample source

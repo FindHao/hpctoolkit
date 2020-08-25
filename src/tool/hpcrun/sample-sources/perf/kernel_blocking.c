@@ -9,7 +9,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2019, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -231,13 +231,13 @@ register_blocking(event_info_t *event_desc)
   // ------------------------------------------
   // create metric to store context switches
   // ------------------------------------------
-  event_desc->metric = 
+  event_desc->hpcrun_metric_id = 
     hpcrun_set_new_metric_info_and_period(
       kb_kind, EVNAME_CONTEXT_SWITCHES,
       MetricFlags_ValFmt_Real, 1 /* period*/, metric_property_none);
 
   event_desc->metric_desc = 
-    hpcrun_id2metric_linked(event_desc->metric); 
+    hpcrun_id2metric_linked(event_desc->hpcrun_metric_id); 
 
   // ------------------------------------------
   // set context switch event description to be used when creating

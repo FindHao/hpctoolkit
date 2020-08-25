@@ -160,9 +160,10 @@ am_hpcstruct_bin_OBJECTS = $(am__objects_1)
 hpcstruct_bin_OBJECTS = $(am_hpcstruct_bin_OBJECTS)
 @HOST_CPU_X86_FAMILY_TRUE@am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1)
 am__DEPENDENCIES_4 = $(HPCLIB_Analysis) $(HPCLIB_Banal) \
-	$(HPCLIB_Banal_Simple) $(HPCLIB_Prof) $(HPCLIB_Binutils) \
-	$(HPCLIB_ISA) $(am__DEPENDENCIES_3) $(HPCLIB_XML) \
-	$(HPCLIB_Support) $(HPCLIB_SupportLean) $(am__DEPENDENCIES_1) \
+	$(HPCLIB_Banal_Simple) $(HPCLIB_Cuda) $(HPCLIB_Prof) \
+	$(HPCLIB_Binutils) $(HPCLIB_ProfLean) $(HPCLIB_ISA) \
+	$(am__DEPENDENCIES_3) $(HPCLIB_XML) $(HPCLIB_Support) \
+	$(HPCLIB_SupportLean) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 hpcstruct_bin_DEPENDENCIES = $(am__DEPENDENCIES_4)
@@ -333,6 +334,7 @@ HOST_HPCSTRUCT_LDFLAGS = @HOST_HPCSTRUCT_LDFLAGS@
 HOST_LIBTREPOSITORY = @HOST_LIBTREPOSITORY@
 HOST_LINK_NO_START_FILES = @HOST_LINK_NO_START_FILES@
 HOST_XPROF_LDFLAGS = @HOST_XPROF_LDFLAGS@
+HPCLINK_CC = @HPCLINK_CC@
 HPCLINK_LD_FLAGS = @HPCLINK_LD_FLAGS@
 HPCPROFMPI_LT_LDFLAGS = @HPCPROFMPI_LT_LDFLAGS@
 HPCRUN_LIBCXX_PATH = @HPCRUN_LIBCXX_PATH@
@@ -379,7 +381,9 @@ LZMA_PROF_MPI_LIBS = @LZMA_PROF_MPI_LIBS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MBEDTLS_COPY = @MBEDTLS_COPY@
 MBEDTLS_IFLAGS = @MBEDTLS_IFLAGS@
+MBEDTLS_LIB = @MBEDTLS_LIB@
 MBEDTLS_LIBS = @MBEDTLS_LIBS@
 MKDIR_P = @MKDIR_P@
 MPICC = @MPICC@
@@ -393,20 +397,28 @@ OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 OPENMP_FLAG = @OPENMP_FLAG@
 OPT_CILK_IFLAGS = @OPT_CILK_IFLAGS@
-OPT_CUDA = @OPT_CUDA@
 OPT_CUDA_IFLAGS = @OPT_CUDA_IFLAGS@
 OPT_CUDA_LDFLAGS = @OPT_CUDA_LDFLAGS@
-OPT_CUDA_SANITIZER = @OPT_CUDA_SANITIZER@
-OPT_CUDA_SANITIZER_IFLAGS = @OPT_CUDA_SANITIZER_IFLAGS@
-OPT_CUDA_SANITIZER_LDFLAGS = @OPT_CUDA_SANITIZER_LDFLAGS@
 OPT_CUPTI = @OPT_CUPTI@
 OPT_CUPTI_IFLAGS = @OPT_CUPTI_IFLAGS@
 OPT_CUPTI_LDFLAGS = @OPT_CUPTI_LDFLAGS@
+OPT_GPU_PATCH = @OPT_GPU_PATCH@
+OPT_GPU_PATCH_IFLAGS = @OPT_GPU_PATCH_IFLAGS@
+OPT_GPU_PATCH_LDFLAGS = @OPT_GPU_PATCH_LDFLAGS@
 OPT_OBJCOPY = @OPT_OBJCOPY@
 OPT_PAPI = @OPT_PAPI@
 OPT_PAPI_IFLAGS = @OPT_PAPI_IFLAGS@
 OPT_PAPI_LDFLAGS = @OPT_PAPI_LDFLAGS@
 OPT_PAPI_LIBPATH = @OPT_PAPI_LIBPATH@
+OPT_REDSHOW = @OPT_REDSHOW@
+OPT_REDSHOW_IFLAGS = @OPT_REDSHOW_IFLAGS@
+OPT_REDSHOW_LDFLAGS = @OPT_REDSHOW_LDFLAGS@
+OPT_ROCM = @OPT_ROCM@
+OPT_ROCM_IFLAGS = @OPT_ROCM_IFLAGS@
+OPT_ROCM_LDFLAGS = @OPT_ROCM_LDFLAGS@
+OPT_SANITIZER = @OPT_SANITIZER@
+OPT_SANITIZER_IFLAGS = @OPT_SANITIZER_IFLAGS@
+OPT_SANITIZER_LDFLAGS = @OPT_SANITIZER_LDFLAGS@
 OPT_UPC_IFLAGS = @OPT_UPC_IFLAGS@
 OPT_UPC_LDFLAGS = @OPT_UPC_LDFLAGS@
 OTOOL = @OTOOL@
@@ -536,6 +548,7 @@ HPC_IFLAGS = -I@abs_top_srcdir@/src -I@abs_top_builddir@/src
 HPCLIB_Analysis = $(top_builddir)/src/lib/analysis/libHPCanalysis.la
 HPCLIB_Banal = $(top_builddir)/src/lib/banal/libHPCbanal.la
 HPCLIB_Banal_Simple = $(top_builddir)/src/lib/banal/libHPCbanal_simple.la
+HPCLIB_Cuda = $(top_builddir)/src/lib/cuda/libHPCcuda.la
 HPCLIB_Prof = $(top_builddir)/src/lib/prof/libHPCprof.la
 HPCLIB_ProfXML = $(top_builddir)/src/lib/profxml/libHPCprofxml.la
 HPCLIB_ProfLean = $(top_builddir)/src/lib/prof-lean/libHPCprof-lean.la
@@ -544,6 +557,8 @@ HPCLIB_ISA = $(top_builddir)/src/lib/isa/libHPCisa.la
 HPCLIB_XML = $(top_builddir)/src/lib/xml/libHPCxml.la
 HPCLIB_Support = $(top_builddir)/src/lib/support/libHPCsupport.la
 HPCLIB_SupportLean = $(top_builddir)/src/lib/support-lean/libHPCsupport-lean.la
+SYMTABAPI_LIB = @SYMTABAPI_LIB@
+SYMTABAPI_LIB_LIST = @SYMTABAPI_LIB_LIST@
 MYSOURCES = main.cpp Args.cpp
 MYCXXFLAGS = @HOST_CXXFLAGS@ $(HPC_IFLAGS) @BINUTILS_IFLAGS@ \
 	$(am__append_2)
@@ -559,8 +574,10 @@ MYLDADD = \
 	$(HPCLIB_Analysis) \
 	$(HPCLIB_Banal) \
 	$(HPCLIB_Banal_Simple) \
+	$(HPCLIB_Cuda) \
 	$(HPCLIB_Prof) \
 	$(HPCLIB_Binutils) \
+	$(HPCLIB_ProfLean) \
 	$(HPCLIB_ISA) \
 	$(MY_LIB_XED) \
 	$(HPCLIB_XML) \
@@ -586,8 +603,8 @@ DOT_LDADD = \
 @HOST_CPU_X86_FAMILY_TRUE@MY_LIB_XED = $(XED2_LIB_FLAGS)
 MYCLEAN = @HOST_LIBTREPOSITORY@
 GENHEADERS = \
-	$(srcdir)/cubins-analysis.h \
-	$(srcdir)/usage.h
+	cubins-analysis.h \
+	usage.h
 
 noinst_HEADERS = $(GENHEADERS)
 BUILT_SOURCES = $(GENHEADERS)
@@ -1090,7 +1107,7 @@ endef
 # Other rules
 #############################################################################
 
-$(srcdir)/%.h : $(srcdir)/%.txt
+%.h : $(srcdir)/%.txt
 	$(srcdir)/stringify.py < $<  > $@
 
 %.cpp.pp : %.cpp

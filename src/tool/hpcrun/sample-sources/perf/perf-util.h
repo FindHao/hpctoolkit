@@ -12,7 +12,7 @@
 // HPCToolkit is at 'hpctoolkit.org' and in 'README.Acknowledgments'.
 // --------------------------------------------------------------------------
 //
-// Copyright ((c)) 2002-2019, Rice University
+// Copyright ((c)) 2002-2020, Rice University
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -115,7 +115,8 @@ typedef struct perf_mmap_data_s {
 typedef struct event_info_s {
   int    id;
   struct perf_event_attr attr; // the event attribute
-  int    metric;               // metric ID of the event (raw counter)
+  int    perf_metric_id;
+  int    hpcrun_metric_id;
   metric_desc_t *metric_desc;  // pointer on hpcrun metric descriptor
 
   // predefined metric

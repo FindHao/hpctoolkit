@@ -156,4 +156,20 @@ cuda_unload_callback
  uint32_t cubin_id
 );
 
+
+// returns 0 on success
+int
+cuda_global_pc_sampling_required
+(
+  int *required
+);
+
+
+int
+cuda_path
+(
+ char *buffer
+);
+
+
 #endif

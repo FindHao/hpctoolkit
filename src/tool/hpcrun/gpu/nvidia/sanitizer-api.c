@@ -477,9 +477,16 @@ sanitizer_record_data_callback
   } else if (record_data->analysis_type == REDSHOW_ANALYSIS_TEMPORAL_REDUNDANCY &&
     record_data->access_type == REDSHOW_ACCESS_WRITE) {
     ga.details.redundancy.type = GPU_RED_TEMPORAL_WRITE_RED;
-  } else {
-    assert(0);
-  }
+  } else if (record_data->analysis_type == REDSHOW_ANALYSIS_VALUE_PATTERN &&
+    record_data->access_type == REDSHOW_ACCESS_READ) {
+    ga.details.redundancy.type = GPU_RED_VALUE_PATTERN_READ;
+  } else if (record_data->analysis_type == REDSHOW_ANALYSIS_VALUE_PATTERN &&
+    record_data->access_type == REDSHOW_ACCESS_WRITE) {
+    ga.details.redundancy.type = GPU_RED_VALUE_PATTERN_WRITE;
+   } else {
+     assert(0);
+   }
+
   cstack_ptr_set(&(ga.next), 0);
   
   uint32_t num_views = record_data->num_views;
